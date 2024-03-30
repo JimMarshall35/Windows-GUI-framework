@@ -49,6 +49,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     // Run the message loop.
     CWPF::RegisterCommonWidgets();
 
+
+
     CWPF::View v(CWPF::ViewInitArgs{ L"MainWindow.xml" });
     v.Show();
 

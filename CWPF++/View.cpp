@@ -2,6 +2,8 @@
 #include <cassert>
 #include <vector>
 #include <map>
+#include <iostream>
+#include "ViewModel.h"
 
 namespace CWPF
 {
@@ -55,6 +57,29 @@ namespace CWPF
     {
         assert(sViewInstanceToHWND.find(m_hWnd) != sViewInstanceToHWND.end());
         sViewInstanceToHWND.erase(m_hWnd);
+        if (m_spDataContext)
+        {
+            if (m_hDataContextSubscription)
+            {
+                m_spDataContext->BindablePropertyChanged -= m_hDataContextSubscription;
+                m_spDataContext->UnSubscribeFromBoundPropertySetExternalEvent(m_eBoundControlChanged);
+
+            }
+        }
+    }
+
+    void View::SetDataContext(std::shared_ptr<ViewModel> dataContext)
+    {
+        if (m_hDataContextSubscription != 0)
+        {
+            m_spDataContext->BindablePropertyChanged -= m_hDataContextSubscription;
+            m_spDataContext->UnSubscribeFromBoundPropertySetExternalEvent(m_eBoundControlChanged);
+        }
+        m_spDataContext = dataContext;
+        m_hDataContextSubscription =  dataContext->BindablePropertyChanged += 
+            std::function<void(std::wstring, TaggedBindingValue)>([this](std::wstring s, TaggedBindingValue v) { OnDataContextPropertyChanged(s, v); });
+
+        m_spDataContext->SubscribeToBoundPropertySetExternalEvent(m_eBoundControlChanged);
     }
 
     void View::Create()
@@ -111,6 +136,10 @@ namespace CWPF
                 AddChildren(w.get(), child, recursionLevel + 1);
             }
         }
+    }
+
+    void View::OnDataContextPropertyChanged(std::wstring name, TaggedBindingValue val)
+    {
     }
 
     static Length ParseLength(const wchar_t* val)

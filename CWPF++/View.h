@@ -35,10 +35,7 @@ namespace CWPF {
 		View(const ViewInitArgs& args);
 		~View();
 
-		inline void SetDataContext(std::shared_ptr<ViewModel> dataContext)
-		{
-			m_spDataContext = dataContext;
-		}
+		void SetDataContext(std::shared_ptr<ViewModel> dataContext);
 		virtual void Create();
 		inline HWND GetHWND() { return m_hWnd; }
 		virtual void Show();
@@ -68,7 +65,9 @@ namespace CWPF {
 		void CreateFromXml();
 		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 		void AddChildren(Widget* parent, pugi::xml_node node, int recursionLevel = 0);
+		void OnDataContextPropertyChanged(std::wstring name, TaggedBindingValue val);
 	private:
+		Event<std::wstring, TaggedBindingValue> m_eBoundControlChanged;
 		std::shared_ptr<ViewModel> m_spDataContext;
 		pugi::xml_document m_Doc;
 		HWND m_hWnd = NULL;
@@ -77,6 +76,7 @@ namespace CWPF {
 		std::unique_ptr<Widget> m_RootWidget;
 		IVec2 m_WindowSize;
 		StartUpType m_SUT;
+		EventSubscriptionToken m_hDataContextSubscription = 0;
 	};
 
 }
