@@ -1,0 +1,27 @@
+
+<Window>
+	<Columns>
+		<Column width="5"/>
+		<Column width="auto"/>
+		<Column width="auto"/>
+		<Column width="*"/>
+		<Column width="5"/>
+	</Columns>
+	<Rows>
+		<Row height="5"/>
+		<Row height="auto"/>
+		<Row height="auto"/>
+		<Row height="*"/>
+		<Row height="5"/>
+	</Rows>
+
+	<StackPanel orientation="horizontal" column="1" row="1">
+		<Label text="sample buttonText"/>
+		<Button text="buttonText"/>
+	</StackPanel>
+	<StackPanel orientation="vertical" column="1" row="2">
+		<Edit width="100" height="100" styles="hscroll,vscroll">
+	</StackPanel>
+	<Button text="buttonText" column="2" row="2"/>
+
+</Window>
