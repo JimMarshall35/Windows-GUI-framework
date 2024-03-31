@@ -36,7 +36,6 @@ namespace CWPF {
 		~View();
 
 		void SetDataContext(std::shared_ptr<ViewModel> dataContext);
-		virtual void Create();
 		inline HWND GetHWND() { return m_hWnd; }
 		virtual void Show();
 
@@ -47,21 +46,20 @@ namespace CWPF {
 		class RootWidget : public Widget
 		{
 		public:
-			RootWidget(View* view);
+			RootWidget(View* view, int w, int h);
 
 			// Inherited via Widget
 			virtual float GetWidth() override;
 			virtual float GetHeight() override;
 			virtual const wchar_t* GetName() override;
 			virtual View* GetView() override;
-			virtual void LayoutChildren() override;
 			virtual std::shared_ptr<Widget> Factory(const pugi::xml_node& node, Widget* pParent) const override;
 		private:
 			View* m_pView = nullptr;
+			float m_Width;
+			float m_Height;
 		};
 	private:
-		void CalculateActualColAndRowSizes();
-		Vec2 GetWidgetPosFromColAndRow(int col, int row) const;
 		void CreateFromXml();
 		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 		void AddChildren(Widget* parent, pugi::xml_node node, int recursionLevel = 0);
@@ -71,8 +69,6 @@ namespace CWPF {
 		std::shared_ptr<ViewModel> m_spDataContext;
 		pugi::xml_document m_Doc;
 		HWND m_hWnd = NULL;
-		std::vector<Length> m_Columns;
-		std::vector<Length> m_Rows;
 		std::unique_ptr<Widget> m_RootWidget;
 		IVec2 m_WindowSize;
 		StartUpType m_SUT;

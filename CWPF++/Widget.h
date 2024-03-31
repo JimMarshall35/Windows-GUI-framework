@@ -32,7 +32,7 @@ namespace CWPF {
 		virtual const wchar_t* GetName() = 0;
 		virtual std::shared_ptr<Widget> Factory(const pugi::xml_node& node, Widget* pParent) const = 0;
 		virtual void Create(HWND hwnd, const Vec2& pos);
-		virtual void LayoutChildren() {};
+		virtual void LayoutChildren();
 		Widget(Widget* pParent);
 
 		inline void PushChild(std::shared_ptr<Widget> w)

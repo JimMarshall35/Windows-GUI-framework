@@ -102,6 +102,21 @@ namespace CWPF
 		void OnBoundPropertySetExternal(std::wstring name, TaggedBindingValue val);
 		EventSubscriptionToken m_hViewSubscription = 0;
 	};
+
+	class TestViewModelMain : public ViewModel
+	{
+	public:
+		TestViewModelMain();
+		DECLARE_BINDABLE_PROPERTY(IntProperty, int)
+		DECLARE_BINDABLE_PROPERTY(BoolProperty, bool)
+		DECLARE_BINDABLE_PROPERTY(StringProperty, const wchar_t*)
+		DECLARE_BINDABLE_PROPERTY(FloatProperty, float)
+	private:
+		int m_IntProperty = 0;
+		bool m_bBoolProperty = false;
+		const wchar_t* m_StringProperty;
+		float m_FloatProperty = 0.0f;
+	};
 }
 
 

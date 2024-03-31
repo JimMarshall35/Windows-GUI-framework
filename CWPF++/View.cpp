@@ -12,7 +12,7 @@ namespace CWPF
     
     
     View::View(const ViewInitArgs& args)
-        :m_RootWidget(std::unique_ptr<Widget>(new RootWidget(this))),
+        :m_RootWidget(std::unique_ptr<Widget>(new RootWidget(this, args.size.x, args.size.y))),
         m_WindowSize(args.size),
         m_SUT(args.SUT)
     {
@@ -38,10 +38,8 @@ namespace CWPF
             CLASS_NAME,                     // Window class
             args.windowText.c_str(),    // Window text
             WS_OVERLAPPEDWINDOW | WS_VISIBLE,            // Window style
-
             // Size and position
             CW_USEDEFAULT, CW_USEDEFAULT, m_WindowSize.x, m_WindowSize.y,
-
             NULL,       // Parent window    
             NULL,       // Menu
             hInstance,  // Instance handle
@@ -63,7 +61,6 @@ namespace CWPF
             {
                 m_spDataContext->BindablePropertyChanged -= m_hDataContextSubscription;
                 m_spDataContext->UnSubscribeFromBoundPropertySetExternalEvent(m_eBoundControlChanged);
-
             }
         }
     }
@@ -82,25 +79,6 @@ namespace CWPF
         m_spDataContext->SubscribeToBoundPropertySetExternalEvent(m_eBoundControlChanged);
     }
 
-    void View::Create()
-    {
-
-    }
-
-    Vec2 View::GetWidgetPosFromColAndRow(int col, int row) const
-    {
-        float x = 0;
-        for (int i = 0; i < col; i++)
-        {
-            x += m_Columns[i].Value;
-        }
-        float y = 0;
-        for (int i = 0; i < row; i++)
-        {
-            y += m_Rows[i].Value;
-        }
-        return Vec2{x, y};
-    }
 
     const wchar_t* View::GetWndClassName()
     {
@@ -115,23 +93,19 @@ namespace CWPF
             if (sWidgetNameMap.find(child.name()) != sWidgetNameMap.end())
             {
                 std::shared_ptr<Widget> w = sWidgetNameMap[child.name()](child, parent);
-                if (recursionLevel == 0)
-                {
-                    int column = 0;
-                    int row = 0;
-                    if (pugi::xml_attribute attr = child.attribute(L"column"))
-                    {
-                        column = attr.as_int();
-                    }
-                    if (pugi::xml_attribute attr = child.attribute(L"row"))
-                    {
-                        row = attr.as_int();
-                    }
-                    assert(row < m_Rows.size());
-                    assert(column < m_Columns.size());
 
-                    w->SetColumnAndRow(column, row);
+                int column = 0;
+                int row = 0;
+                if (pugi::xml_attribute attr = child.attribute(L"column"))
+                {
+                    column = attr.as_int();
                 }
+                if (pugi::xml_attribute attr = child.attribute(L"row"))
+                {
+                    row = attr.as_int();
+                }
+
+                w->SetColumnAndRow(column, row);
                 parent->PushChild(w);
                 AddChildren(w.get(), child, recursionLevel + 1);
             }
@@ -142,34 +116,6 @@ namespace CWPF
     {
     }
 
-    static Length ParseLength(const wchar_t* val)
-    {
-        Length l = {};
-        if (wcslen(val) == 1 && val[0] == '*')
-        {
-            l.Type = LengthType::Stretch;
-            l.Value = 0.0;
-        }
-        else if (wcscmp(val, L"auto") == 0)
-        {
-            l.Type = LengthType::Auto;
-            l.Value = 0.0;
-        }
-        else
-        {
-            l.Type = LengthType::Fixed;
-            try
-            {
-                l.Value = std::stof(val);
-            }
-            catch (...)
-            {
-                assert(false);
-                l.Type = LengthType::Invalid;
-            }
-        }
-        return l;
-    }
 
     void View::Show()
     {
@@ -194,112 +140,12 @@ namespace CWPF
         };
 
 
-        for (pugi::xml_node col : wnd.child(L"Columns").children(L"Column"))
-        {
-            PushLength(m_Columns, L"width", col);
-        }
-
-        for (pugi::xml_node row : wnd.child(L"Rows").children(L"Row"))
-        {
-            PushLength(m_Rows, L"height", row);
-        }
 
         AddChildren(m_RootWidget.get(), wnd);
-        CalculateActualColAndRowSizes();
         m_RootWidget->LayoutChildren();
         m_RootWidget->Create(m_hWnd, { 0,0 });
     }
 
-    void View::CalculateActualColAndRowSizes()
-    {
-        std::vector<std::vector<Widget*>> widgetsPerRow(m_Rows.size());
-        std::vector<std::vector<Widget*>> widgetsPerCol(m_Columns.size());
-        const WidgetVec& children = m_RootWidget->GetChildren();
-        for (std::shared_ptr<Widget> child : children)
-        {
-            IVec2 cAndR = child->GetColAndRow();
-            widgetsPerCol[cAndR.x].push_back(child.get());
-            widgetsPerRow[cAndR.y].push_back(child.get());
-        }
-        RECT winRect;
-        GetWindowRect(m_hWnd, &winRect);
-        int winWidth = winRect.right - winRect.left;
-        int winHeight = winRect.bottom - winRect.top;
-        
-        int total = 0;
-        std::vector<int> stretchRows;
-        for (int i = 0; i < m_Rows.size(); i++)
-        {
-            switch (m_Rows[i].Type)
-            {
-            case LengthType::Fixed:
-                total += m_Rows[i].Value;
-                break;
-            case LengthType::Stretch:
-                stretchRows.push_back(i);
-                break;
-            case LengthType::Auto:
-            {
-                int tallestRow = 0;
-                for (Widget* w : widgetsPerRow[i])
-                {
-                    float height = w->GetHeight();
-                    if (height > tallestRow)
-                    {
-                        tallestRow = height;
-                    }
-                }
-                total += tallestRow;
-                m_Rows[i].Value = tallestRow;
-                break;
-            }
-            }
-        }
-
-        float totalStretchRowSize = winHeight - total;
-        float stretchRowHeight = totalStretchRowSize / stretchRows.size();
-        for (int i : stretchRows)
-        {
-            m_Rows[i].Value = stretchRowHeight;
-        }
-
-        total = 0;
-        std::vector<int> stretchCols;
-        for (int i = 0; i < m_Columns.size(); i++)
-        {
-            switch (m_Columns[i].Type)
-            {
-            case LengthType::Fixed:
-                total += m_Columns[i].Value;
-                break;
-            case LengthType::Stretch:
-                stretchCols.push_back(i);
-                break;
-            case LengthType::Auto:
-            {
-                int widestCol = 0;
-                for (Widget* w : widgetsPerCol[i])
-                {
-                    float width = w->GetWidth();
-                    if (width > widestCol)
-                    {
-                        widestCol = width;
-                    }
-                }
-                total += widestCol;
-                m_Columns[i].Value = widestCol;
-                break;
-            }
-            }
-        }
-
-        float totalStretchColSize = winWidth - total;
-        float stretchColWidth = totalStretchColSize / stretchCols.size();
-        for (int i : stretchCols)
-        {
-            m_Columns[i].Value = stretchColWidth;
-        }
-    }
 
     LRESULT View::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
@@ -345,19 +191,21 @@ namespace CWPF
         return m_pView;
     }
 
-    View::RootWidget::RootWidget(View* view)
-        :m_pView(view)
+    View::RootWidget::RootWidget(View* view, int w, int h)
+        :m_pView(view),
+        m_Width(w),
+        m_Height(h)
     {
     }
 
     float View::RootWidget::GetWidth()
     {
-        return 0.0f;
+        return m_Width;
     }
 
     float View::RootWidget::GetHeight()
     {
-        return 0.0f;
+        return m_Height;
     }
 
     const wchar_t* View::RootWidget::GetName()
@@ -368,17 +216,7 @@ namespace CWPF
 
     std::shared_ptr<Widget> View::RootWidget::Factory(const pugi::xml_node& node, Widget* pParent) const
     {
+        assert(false);
         return nullptr;
-    }
-
-    void View::RootWidget::LayoutChildren()
-    {
-        for (const std::shared_ptr<Widget> w : m_Children)
-        {
-            IVec2 cAndR = w->GetColAndRow();
-            Vec2 pos = m_pView->GetWidgetPosFromColAndRow(cAndR.x, cAndR.y);
-            w->SetPos(pos);
-            w->LayoutChildren();
-        }
     }
 }

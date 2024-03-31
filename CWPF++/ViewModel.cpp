@@ -27,6 +27,16 @@ namespace CWPF
 	{
 	}
 
+	TestViewModelMain::TestViewModelMain()
+	{
+	}
+
+	IMPLEMENT_BINDABLE_INT_PROPERTY(TestViewModelMain, IntProperty, m_IntProperty)
+	IMPLEMENT_BINDABLE_BOOL_PROPERTY(TestViewModelMain, BoolProperty, m_bBoolProperty)
+	IMPLEMENT_BINDABLE_WSTRING_PROPERTY(TestViewModelMain, StringProperty, m_StringProperty)
+	IMPLEMENT_BINDABLE_FLOAT_PROPERTY(TestViewModelMain, FloatProperty, m_FloatProperty)
+
+
 }
 
 

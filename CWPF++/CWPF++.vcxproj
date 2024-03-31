@@ -147,6 +147,7 @@
     <ClCompile Include="CommonWidgets.cpp" />
     <ClCompile Include="CWPF++.cpp" />
     <ClCompile Include="EditWidget.cpp" />
+    <ClCompile Include="GridWidget.cpp" />
     <ClCompile Include="LabelWidget.cpp" />
     <ClCompile Include="pugixml.cpp" />
     <ClCompile Include="StackPanelWidget.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="ButtonWidget.h" />
     <ClInclude Include="CommonWidgets.h" />
     <ClInclude Include="EditWidget.h" />
+    <ClInclude Include="GridWidget.h" />
     <ClInclude Include="LabelWidget.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StackPanelWidget.h" />

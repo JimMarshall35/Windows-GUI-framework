@@ -1,4 +1,5 @@
 #include "WCFCommon.h"
+#include <string>
 namespace CWPF
 {
 
@@ -47,5 +48,35 @@ namespace CWPF
             return Alignment::BottomRight;
         }
         return defaultVal;
+    }
+
+
+    Length ParseLength(const wchar_t* val)
+    {
+        Length l = {};
+        if (wcslen(val) == 1 && val[0] == '*')
+        {
+            l.Type = LengthType::Stretch;
+            l.Value = 0.0;
+        }
+        else if (wcscmp(val, L"auto") == 0)
+        {
+            l.Type = LengthType::Auto;
+            l.Value = 0.0;
+        }
+        else
+        {
+            l.Type = LengthType::Fixed;
+            try
+            {
+                l.Value = std::stof(val);
+            }
+            catch (...)
+            {
+                assert(false);
+                l.Type = LengthType::Invalid;
+            }
+        }
+        return l;
     }
 }

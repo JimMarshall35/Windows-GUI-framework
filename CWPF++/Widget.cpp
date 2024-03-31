@@ -15,4 +15,11 @@ namespace CWPF {
             w->Create(hwnd, pos);
         }
     }
+    void Widget::LayoutChildren()
+    {
+        for (std::shared_ptr<Widget> w : m_Children)
+        {
+            w->LayoutChildren();
+        }
+    }
 }

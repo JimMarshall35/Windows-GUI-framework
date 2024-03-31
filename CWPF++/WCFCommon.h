@@ -69,6 +69,7 @@ namespace CWPF
 	HMENU GetControlID();
 
 	Alignment ParseAlignment(const wchar_t* t, Alignment defaultVal = Alignment::TopLeft);
+	Length ParseLength(const wchar_t* val);
 
 	typedef int EventSubscriptionToken;
 	template<typename... ArgTs>
