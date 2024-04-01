@@ -3,9 +3,13 @@
 #include <list>
 #include <functional>
 #include <cassert>
+#include <memory>
 
 namespace CWPF
 {
+	class Widget;
+	class ICommand;
+
 	enum Alignment
 	{
 		Top,
@@ -52,7 +56,7 @@ namespace CWPF
 		Flt,
 		Int,
 		Bool,
-
+		Command,
 	};
 
 	struct TaggedBindingValue
@@ -62,12 +66,25 @@ namespace CWPF
 			float f;
 			int i;
 			bool b;
+			ICommand* cmd;
 		}Value;
 		BindingValueType VType = BindingValueType::Invalid;
 	};
 
-	HMENU GetControlID();
+	struct WidgetPropertyBinding
+	{
+		BindingType Type;
+		Widget* pWidget;
+	};
 
+	struct Colour
+	{
+		unsigned char r, g, b, a;
+	};
+
+	bool ParseColourAttribString(const wchar_t* str, Colour& c);
+
+	int GetControlID();
 	Alignment ParseAlignment(const wchar_t* t, Alignment defaultVal = Alignment::TopLeft);
 	Length ParseLength(const wchar_t* val);
 

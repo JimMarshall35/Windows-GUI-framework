@@ -38,7 +38,7 @@ namespace CWPF {
 		void SetDataContext(std::shared_ptr<ViewModel> dataContext);
 		inline HWND GetHWND() { return m_hWnd; }
 		virtual void Show();
-
+		void SignalBoundPropertyChanged(const std::wstring& name, const TaggedBindingValue& val);
 	protected:
 		virtual const wchar_t* GetWndClassName();
 		
@@ -73,6 +73,8 @@ namespace CWPF {
 		IVec2 m_WindowSize;
 		StartUpType m_SUT;
 		EventSubscriptionToken m_hDataContextSubscription = 0;
+		std::map<std::wstring, std::vector<WidgetPropertyBinding>> m_Bindings;
+		static std::map<HMENU, std::shared_ptr<Widget>> s_WidgetIDMap;
 	};
 
 }

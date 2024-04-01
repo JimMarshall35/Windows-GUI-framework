@@ -25,6 +25,5 @@ namespace CWPF
 		int m_Width;
 		int m_Height;
 		std::wstring m_Text;
-		HMENU m_ID;
 	};
 }

@@ -1,5 +1,6 @@
 #include "LabelWidget.h"
 #include "View.h"
+#include "WCFCommon.h"
 namespace CWPF {
 
     LabelWidget::~LabelWidget()
@@ -12,7 +13,9 @@ namespace CWPF {
         m_Text(args.Text),
         m_FontSize(args.FontSize),
         m_Alignment(args.Alignment),
-        m_FontName(args.Font)
+        m_FontName(args.Font),
+        m_TextColour(args.TextColour),
+        m_BackgroundColour(args.BackgroundColour)
     {
         Widget* parent = pParent;
         while (!parent->GetView())
@@ -43,7 +46,7 @@ namespace CWPF {
     void LabelWidget::Create(HWND hwnd, const Vec2& pos)
     {
         m_hWnd = CreateWindowEx(0, TEXT("STATIC"), m_Text.c_str(), WS_CHILD | WS_VISIBLE | SS_LEFT,
-            m_Pos.x, m_Pos.y, m_Width, m_Height, hwnd, HMENU(NULL), GetModuleHandle(NULL), NULL);
+            m_Pos.x, m_Pos.y, m_Width, m_Height, hwnd, HMENU(m_ID), GetModuleHandle(NULL), NULL);
 
         SendMessage(m_hWnd, WM_SETFONT, WPARAM(m_hFont), TRUE);
     }
@@ -86,8 +89,19 @@ namespace CWPF {
         else
         {
             args.FontSize = 11;
-
         }
-        return std::shared_ptr<Widget>(new LabelWidget(pParent, args));
+        if (pugi::xml_attribute n = node.attribute(L"textColour"))
+        {
+            bool b = ParseColourAttribString(n.as_string(), args.TextColour);
+            assert(b);
+        }
+        if (pugi::xml_attribute n = node.attribute(L"backgroundColour"))
+        {
+            bool b = ParseColourAttribString(n.as_string(), args.BackgroundColour);
+            assert(b);
+        }
+        auto p = new LabelWidget(pParent, args);
+        p->m_ID = GetControlID();
+        return std::shared_ptr<Widget>(p);
     }
 }

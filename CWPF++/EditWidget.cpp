@@ -1,5 +1,6 @@
 #include "EditWidget.h"
 #include <cassert>
+#include "WCFCommon.h"
 
 namespace CWPF {
 
@@ -22,7 +23,7 @@ namespace CWPF {
             ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL,
             m_Pos.x, m_Pos.y, m_Width, m_Height,
             hwnd,         // parent window 
-            m_ID,   // edit control ID 
+            (HMENU)m_ID,   // edit control ID 
             (HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE),
             NULL);        // pointer not needed 
 
@@ -52,7 +53,9 @@ namespace CWPF {
         args.Height = node.attribute(L"height").as_int();
         args.Width = node.attribute(L"width").as_int();
         args.Text = node.attribute(L"text").as_string();
-        return std::shared_ptr<Widget>(new EditWidget(pParent, args));
+        auto p = new EditWidget(pParent, args);
+        p->m_ID = GetControlID();
+        return std::shared_ptr<Widget>(p);
     }
 
 }

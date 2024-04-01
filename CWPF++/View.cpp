@@ -4,13 +4,14 @@
 #include <map>
 #include <iostream>
 #include "ViewModel.h"
+#include "LabelWidget.h"
 
 namespace CWPF
 {
     std::map<HWND, View*> sViewInstanceToHWND;
 
-    
-    
+    std::map<HMENU, std::shared_ptr<Widget>> View::s_WidgetIDMap;
+
     View::View(const ViewInitArgs& args)
         :m_RootWidget(std::unique_ptr<Widget>(new RootWidget(this, args.size.x, args.size.y))),
         m_WindowSize(args.size),
@@ -77,6 +78,7 @@ namespace CWPF
             std::function<void(std::wstring, TaggedBindingValue)>([this](std::wstring s, TaggedBindingValue v) { OnDataContextPropertyChanged(s, v); });
 
         m_spDataContext->SubscribeToBoundPropertySetExternalEvent(m_eBoundControlChanged);
+        m_spDataContext->InitializeProperties();
     }
 
 
@@ -93,6 +95,12 @@ namespace CWPF
             if (sWidgetNameMap.find(child.name()) != sWidgetNameMap.end())
             {
                 std::shared_ptr<Widget> w = sWidgetNameMap[child.name()](child, parent);
+                int id = (int)w->GetID();
+                if (id > 0)
+                {
+                    s_WidgetIDMap[(HMENU)id] = w;
+                }
+                w->EnumerateBindings(m_Bindings);
 
                 int column = 0;
                 int row = 0;
@@ -114,6 +122,13 @@ namespace CWPF
 
     void View::OnDataContextPropertyChanged(std::wstring name, TaggedBindingValue val)
     {
+        if (m_Bindings.find(name) != m_Bindings.end())
+        {
+            for (const WidgetPropertyBinding& b : m_Bindings[name])
+            {
+                b.pWidget->OnBoundPropertyChanged(val, name);
+            }
+        }
     }
 
 
@@ -129,6 +144,11 @@ namespace CWPF
         ShowWindow(m_hWnd, SW_SHOWDEFAULT);// MyEnumToWin32[(int)m_SUT]);
     }
 
+    void View::SignalBoundPropertyChanged(const std::wstring& name, const TaggedBindingValue& val)
+    {
+        m_eBoundControlChanged(name, val);
+    }
+
     void View::CreateFromXml()
     {
         pugi::xml_node wnd = m_Doc.child(L"Window");
@@ -139,8 +159,7 @@ namespace CWPF
             outVec.push_back(ParseLength(s));
         };
 
-
-
+        m_Bindings.clear();
         AddChildren(m_RootWidget.get(), wnd);
         m_RootWidget->LayoutChildren();
         m_RootWidget->Create(m_hWnd, { 0,0 });
@@ -151,6 +170,29 @@ namespace CWPF
     {
         switch (uMsg)
         {
+        case WM_CTLCOLORSTATIC:
+        {
+            int id = GetDlgCtrlID((HWND)lParam);
+            if (s_WidgetIDMap.find((HMENU)id) != s_WidgetIDMap.end())
+            {
+                std::shared_ptr<Widget> w = s_WidgetIDMap[(HMENU)id];
+                LabelWidget* label = (LabelWidget*)w.get();
+
+                HDC hdcStatic = (HDC)wParam;
+                Colour bg = label->GetBackgroundColour();
+                Colour txt = label->GetTextColour();
+                SetTextColor(hdcStatic, RGB(txt.r, txt.g, txt.b));
+                SetBkColor(hdcStatic, RGB(bg.r, bg.g, bg.b));
+
+                if (label->GetBackgroundBrush() == NULL)
+                {
+                    label->SetBackgroundBrush(CreateSolidBrush(RGB(bg.r, bg.g, bg.b)));
+                }
+                return (INT_PTR)label->GetBackgroundBrush();
+            }
+            return 0;
+
+        }
         case WM_DESTROY:
             PostQuitMessage(0);
             return 0;
@@ -175,6 +217,21 @@ namespace CWPF
             View* pView = (View*)pCreateStruct->lpCreateParams;
             pView->m_hWnd = hwnd;
             pView->CreateFromXml();
+        }
+        return 0;
+        case WM_COMMAND:
+        {
+            WORD hiWord = HIWORD(wParam);
+            HMENU controlID = (HMENU)LOWORD(wParam);
+            switch (hiWord)
+            {
+            case BN_CLICKED:
+                if(s_WidgetIDMap.find(controlID) != s_WidgetIDMap.end())
+                {
+                    s_WidgetIDMap[controlID]->OnCmdMesage(hiWord);
+                }
+                break;
+            }
         }
         return 0;
         }

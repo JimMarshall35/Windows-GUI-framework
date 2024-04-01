@@ -1,4 +1,5 @@
 #include "ButtonWidget.h"
+#include "Command.h"
 
 namespace CWPF {
 
@@ -6,7 +7,8 @@ namespace CWPF {
         :Widget(pParent),
         m_Height(args.height),
         m_Width(args.width),
-        m_Text(args.Text)
+        m_Text(args.Text),
+        m_BoundPropertyName(args.BoundPropertyName)
     {
 
     }
@@ -29,7 +31,6 @@ namespace CWPF {
 
     void ButtonWidget::Create(HWND parent, const Vec2& pos)
     {
-        m_ID = GetControlID();
         m_hWnd = CreateWindow(
             L"BUTTON",  // Predefined class; Unicode assumed 
             m_Text.c_str(),      // Button text 
@@ -39,7 +40,7 @@ namespace CWPF {
             m_Width,        // Button width
             m_Height,        // Button height
             parent,     // Parent window
-            m_ID,
+            (HMENU)m_ID,
             (HINSTANCE)GetWindowLongPtr(parent, GWLP_HINSTANCE), // instance handle
             NULL);      // Pointer not needed.
     }
@@ -50,7 +51,6 @@ namespace CWPF {
         if (pugi::xml_attribute n = node.attribute(L"height"))
         {
             args.height = n.as_int();
-
         }
         else
         {
@@ -58,6 +58,40 @@ namespace CWPF {
         }
         args.width = node.attribute(L"width").as_int();
         args.Text = node.attribute(L"text").as_string();
-        return std::shared_ptr<Widget>(new ButtonWidget(pParent, args));
+        if (pugi::xml_attribute n = node.attribute(L"command"))
+        {
+            args.BoundPropertyName = n.as_string();
+        }
+        auto p = new ButtonWidget(pParent, args);
+        auto sp =  std::shared_ptr<Widget>(p);
+        p->m_ID = GetControlID();
+        return sp;
+    }
+    void ButtonWidget::EnumerateBindings(std::map<std::wstring, std::vector<WidgetPropertyBinding>>& bindingsMap) const
+    {
+        if (m_BoundPropertyName.length() > 0)
+        {
+            bindingsMap[m_BoundPropertyName].push_back(WidgetPropertyBinding{ BindingType::OneWay, (Widget*)this });
+        }
+    }
+    void ButtonWidget::OnBoundPropertyChanged(const TaggedBindingValue& val, const std::wstring& name)
+    {
+        assert(val.VType == BindingValueType::Command);
+        m_pCmd = val.Value.cmd;
+    }
+    void ButtonWidget::OnCmdMesage(int msg)
+    {
+        switch (msg)
+        {
+        case BN_CLICKED:
+        {
+            if (m_pCmd)
+            {
+                m_pCmd->Execute(nullptr);
+            }
+            break;
+        }
+            
+        }
     }
 }

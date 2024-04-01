@@ -1,12 +1,13 @@
 #include "WCFCommon.h"
 #include <string>
+#include <cassert>
 namespace CWPF
 {
 
-    HMENU GetControlID()
+    int GetControlID()
     {
         static int i = 1;
-        return (HMENU)i++;
+        return i++;
     }
 
     Alignment ParseAlignment(const wchar_t* t, Alignment defaultVal /*= Alignment::TopLeft*/)
@@ -78,5 +79,40 @@ namespace CWPF
             }
         }
         return l;
+    }
+    bool ParseColourAttribString(const wchar_t* str, Colour& c)
+    {
+        wchar_t buf[32];
+        const wchar_t* read = str;
+        wchar_t* write = buf;
+        for (int i = 0; i < 3; i++)
+        {
+            while (*read  != '\0' && *read != ',')
+            {
+                *write++ = *read++;
+            }
+            read++;
+            *write = '\0';
+            int v = _wtoi(buf);
+            write = buf;
+            if (v > 255)
+            {
+                return false;
+            }
+            switch (i)
+            {
+            case 0:
+                c.r = v;
+                break;
+            case 1:
+                c.g = v;
+                break;
+            case 2:
+                c.b = v;
+                break;
+            }
+        }
+        
+        return true;
     }
 }

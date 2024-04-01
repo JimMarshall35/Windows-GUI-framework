@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ButtonWidget.cpp" />
+    <ClCompile Include="Command.cpp" />
     <ClCompile Include="CommonWidgets.cpp" />
     <ClCompile Include="CWPF++.cpp" />
     <ClCompile Include="EditWidget.cpp" />
@@ -159,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ButtonWidget.h" />
+    <ClInclude Include="Command.h" />
     <ClInclude Include="CommonWidgets.h" />
     <ClInclude Include="EditWidget.h" />
     <ClInclude Include="GridWidget.h" />

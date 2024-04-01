@@ -22,7 +22,6 @@ namespace CWPF {
 	extern std::map<std::wstring, WidgetFactory> sWidgetNameMap;
 
 	
-
 	class Widget
 	{
 	public:
@@ -33,7 +32,15 @@ namespace CWPF {
 		virtual std::shared_ptr<Widget> Factory(const pugi::xml_node& node, Widget* pParent) const = 0;
 		virtual void Create(HWND hwnd, const Vec2& pos);
 		virtual void LayoutChildren();
+		virtual void OnBoundPropertyChanged(const TaggedBindingValue& val, const std::wstring& name) {}
+		virtual void EnumerateBindings(std::map<std::wstring, std::vector<WidgetPropertyBinding>>& bindingsMap) const {};
+		virtual void OnCmdMesage(int msg) {}
 		Widget(Widget* pParent);
+
+		inline int GetID()
+		{
+			return m_ID;
+		}
 
 		inline void PushChild(std::shared_ptr<Widget> w)
 		{
@@ -85,6 +92,29 @@ namespace CWPF {
 		Widget* m_pParent;
 		int m_Column = 0;
 		int m_Row = 0;
+		int m_ID = -1;
+
 	};
+
+	struct BindableProperty
+	{
+		TaggedBindingValue Value;
+		std::wstring Name;
+		BindingType Type;
+		std::function<TaggedBindingValue(void)> Getter;
+		std::function<void(const TaggedBindingValue&)> Setter;
+
+	};
+
+	/*class BindablePropertiesWidget : public Widget
+	{
+	public:
+		virtual void OnBoundPropertyChanged(const TaggedBindingValue& val, const std::wstring& name);
+		virtual void EnumerateBindings(std::map<std::wstring, std::vector<WidgetPropertyBinding>>& bindingsMap) const;
+		BindablePropertiesWidget();
+	protected:
+		
+		virtual std::map<std::wstring, BindableProperty>& GetBindableProperties() const = 0;
+	};*/
 };
 
