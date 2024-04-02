@@ -153,12 +153,6 @@ namespace CWPF
     {
         pugi::xml_node wnd = m_Doc.child(L"Window");
 
-        auto PushLength = [](std::vector<Length>& outVec, const wchar_t* attributeName, pugi::xml_node& node) -> void
-        {
-            const wchar_t* s = node.attribute(attributeName).as_string();
-            outVec.push_back(ParseLength(s));
-        };
-
         m_Bindings.clear();
         AddChildren(m_RootWidget.get(), wnd);
         m_RootWidget->LayoutChildren();
@@ -184,10 +178,6 @@ namespace CWPF
                 SetTextColor(hdcStatic, RGB(txt.r, txt.g, txt.b));
                 SetBkColor(hdcStatic, RGB(bg.r, bg.g, bg.b));
 
-                if (label->GetBackgroundBrush() == NULL)
-                {
-                    label->SetBackgroundBrush(CreateSolidBrush(RGB(bg.r, bg.g, bg.b)));
-                }
                 return (INT_PTR)label->GetBackgroundBrush();
             }
             return 0;
@@ -237,11 +227,6 @@ namespace CWPF
         }
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
-
-    
-
-    
-
 
     View* View::RootWidget::GetView()
     {

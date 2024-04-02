@@ -27,8 +27,7 @@ namespace CWPF {
 		virtual float GetHeight() override;
 		virtual const wchar_t* GetName() override;
 		virtual std::shared_ptr<Widget> Factory(const pugi::xml_node& node, Widget* pParent) const override;
-		void SetBackgroundBrush(const HBRUSH& brush) { m_hbrBkgnd = brush; }
-		HBRUSH GetBackgroundBrush() { return m_hbrBkgnd; }
+		HBRUSH GetBackgroundBrush();
 		Colour GetBackgroundColour() { return m_BackgroundColour; }
 		Colour GetTextColour() { return m_TextColour; }
 	protected:

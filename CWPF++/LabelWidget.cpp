@@ -104,4 +104,13 @@ namespace CWPF {
         p->m_ID = GetControlID();
         return std::shared_ptr<Widget>(p);
     }
+    HBRUSH LabelWidget::GetBackgroundBrush()
+    {
+        if (m_hbrBkgnd == NULL)
+        {
+            Colour bg = GetBackgroundColour();
+            m_hbrBkgnd = CreateSolidBrush(RGB(bg.r, bg.g, bg.b));
+        }
+        return m_hbrBkgnd;
+    }
 }
