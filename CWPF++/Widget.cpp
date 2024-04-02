@@ -8,6 +8,33 @@ namespace CWPF {
     {
     }
 
+    CommonWidgetInitArgs Widget::ParseCommonInitArgs(const pugi::xml_node& node)
+    {
+        CommonWidgetInitArgs a;
+        a.HorizontalAlignment = HorizontalAlignment::Left;
+        a.VerticalAlignment = VerticalAlignment::Top;
+        if (pugi::xml_attribute attr = node.attribute(L"halign"))
+        {
+            a.HorizontalAlignment = ParseHAlignment(attr.as_string());
+        }
+        if (pugi::xml_attribute attr = node.attribute(L"valign"))
+        {
+            a.VerticalAlignment = ParseVAlignment(attr.as_string());
+        }
+        return a; 
+    }
+
+    std::shared_ptr<Widget> Widget::Factory(const pugi::xml_node& node, Widget* pParent) const
+    {
+        // rely on subclass for actual implementation
+        std::shared_ptr<Widget> w = FactoryImplementation(node, pParent);
+        // but decorate the result with extra common properties
+        CommonWidgetInitArgs wArgs = ParseCommonInitArgs(node);
+        w->m_VerticalAlignment = wArgs.VerticalAlignment;
+        w->m_HorizontalAlignment = wArgs.HorizontalAlignment;
+        return w;
+    }
+
     void Widget::Create(HWND hwnd, const Vec2& pos)
     {
         for (std::shared_ptr<Widget> w : m_Children)

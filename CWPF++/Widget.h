@@ -21,6 +21,12 @@ namespace CWPF {
 
 	extern std::map<std::wstring, WidgetFactory> sWidgetNameMap;
 
+	struct CommonWidgetInitArgs
+	{
+		HorizontalAlignment HorizontalAlignment = HorizontalAlignment::Left;
+		VerticalAlignment VerticalAlignment = VerticalAlignment::Top;
+
+	};
 	
 	class Widget
 	{
@@ -29,7 +35,7 @@ namespace CWPF {
 		virtual float GetWidth() = 0;
 		virtual float GetHeight() = 0;
 		virtual const wchar_t* GetName() = 0;
-		virtual std::shared_ptr<Widget> Factory(const pugi::xml_node& node, Widget* pParent) const = 0;
+		std::shared_ptr<Widget> Factory(const pugi::xml_node& node, Widget* pParent) const;
 		virtual void Create(HWND hwnd, const Vec2& pos);
 		virtual void LayoutChildren();
 		virtual void OnBoundPropertyChanged(const TaggedBindingValue& val, const std::wstring& name) {}
@@ -84,7 +90,9 @@ namespace CWPF {
 			return m_Children;
 		}
 	protected:
+		virtual std::shared_ptr<Widget> FactoryImplementation(const pugi::xml_node& node, Widget* pParent) const = 0;
 
+		static CommonWidgetInitArgs ParseCommonInitArgs(const pugi::xml_node& node);
 	protected:
 		Vec2 m_Pos;
 		WidgetVec m_Children;
@@ -93,6 +101,8 @@ namespace CWPF {
 		int m_Column = 0;
 		int m_Row = 0;
 		int m_ID = -1;
+		HorizontalAlignment m_HorizontalAlignment = HorizontalAlignment::Left;
+		VerticalAlignment m_VerticalAlignment = VerticalAlignment::Top;
 
 	};
 

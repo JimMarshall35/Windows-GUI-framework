@@ -45,7 +45,7 @@ namespace CWPF {
             NULL);      // Pointer not needed.
     }
 
-    std::shared_ptr<Widget> ButtonWidget::Factory(const pugi::xml_node& node, Widget* pParent) const
+    std::shared_ptr<Widget> ButtonWidget::FactoryImplementation(const pugi::xml_node& node, Widget* pParent) const
     {
         ButtonWidgetInitArgs args;
         if (pugi::xml_attribute n = node.attribute(L"height"))

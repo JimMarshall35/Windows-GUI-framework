@@ -12,7 +12,6 @@ namespace CWPF {
         :Widget(pParent),
         m_Text(args.Text),
         m_FontSize(args.FontSize),
-        m_Alignment(args.Alignment),
         m_FontName(args.Font),
         m_TextColour(args.TextColour),
         m_BackgroundColour(args.BackgroundColour)
@@ -65,10 +64,9 @@ namespace CWPF {
         return s;
     }
 
-    std::shared_ptr<Widget> LabelWidget::Factory(const pugi::xml_node& node, Widget* pParent) const
+    std::shared_ptr<Widget> LabelWidget::FactoryImplementation(const pugi::xml_node& node, Widget* pParent) const
     {
         const wchar_t* text = node.attribute(L"text").as_string();
-        const wchar_t* align = node.attribute(L"alignment").as_string();
         LabelWidgetInitArgs args;
 
         if (pugi::xml_attribute n = node.attribute(L"font"))
@@ -80,11 +78,12 @@ namespace CWPF {
             args.Font = L"Arial";
         }
         args.Text = text;
-        args.Alignment = ParseAlignment(align);
+
+        args.common = ParseCommonInitArgs(node);
+
         if (pugi::xml_attribute n = node.attribute(L"fontSize"))
         {
             args.FontSize = n.as_int();
-
         }
         else
         {

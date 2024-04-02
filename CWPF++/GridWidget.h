@@ -16,9 +16,9 @@ namespace CWPF
 		virtual float GetWidth() override;
 		virtual float GetHeight() override;
 		virtual const wchar_t* GetName() override;
-		virtual std::shared_ptr<Widget> Factory(const pugi::xml_node& node, Widget* pParent) const override;
 		virtual void LayoutChildren();
 	protected:
+		virtual std::shared_ptr<Widget> FactoryImplementation(const pugi::xml_node& node, Widget* pParent) const override;
 		Vec2 GetWidgetPosFromColAndRow(int col, int row) const;
 		void CalculateActualColAndRowSizes();
 	protected:

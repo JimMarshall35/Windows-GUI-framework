@@ -10,17 +10,18 @@ namespace CWPF
 	class Widget;
 	class ICommand;
 
-	enum Alignment
+	enum class HorizontalAlignment
 	{
-		Top,
-		TopLeft,
-		TopRight,
 		Left,
 		Middle,
-		Right,
-		BottomLeft,
-		Bottom,
-		BottomRight
+		Right
+	};
+
+	enum class VerticalAlignment
+	{
+		Top,
+		Middle,
+		Bottom
 	};
 
 	enum class LengthType
@@ -85,7 +86,11 @@ namespace CWPF
 	bool ParseColourAttribString(const wchar_t* str, Colour& c);
 
 	int GetControlID();
-	Alignment ParseAlignment(const wchar_t* t, Alignment defaultVal = Alignment::TopLeft);
+
+	HorizontalAlignment ParseHAlignment(const wchar_t* t, HorizontalAlignment defaultVal = HorizontalAlignment::Left);
+
+	VerticalAlignment ParseVAlignment(const wchar_t* t, VerticalAlignment defaultVal = VerticalAlignment::Top);
+	
 	Length ParseLength(const wchar_t* val);
 
 	typedef int EventSubscriptionToken;

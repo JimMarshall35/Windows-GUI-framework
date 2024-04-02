@@ -17,7 +17,7 @@
 		</Rows>
 
 		<StackPanel orientation="horizontal" column="1" row="1">
-			<Label text="sample buttonText" fontSize="12" font="consolas" textColour="255,0,0" backgroundColour="255,255,255"/>
+			<Label text="sample buttonText" fontSize="10" font="consolas" textColour="255,0,0" backgroundColour="255,255,255" halign="Left" valign="center"/>
 			<Button text="buttonText" width="50" height="25" command="CmdProperty"/>
 		</StackPanel>
 		<StackPanel orientation="vertical" column="1" row="2">

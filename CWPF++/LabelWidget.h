@@ -7,8 +7,8 @@ namespace CWPF {
 	{
 		std::wstring Text;
 		int FontSize;
-		Alignment Alignment;
 		std::wstring Font;
+		CommonWidgetInitArgs common;
 		Colour TextColour = {0x00,0x00,0x00,0xff};
 		Colour BackgroundColour = { 0xff,0xff,0xff,0xff };
 	};
@@ -26,16 +26,16 @@ namespace CWPF {
 		virtual float GetWidth() override;
 		virtual float GetHeight() override;
 		virtual const wchar_t* GetName() override;
-		virtual std::shared_ptr<Widget> Factory(const pugi::xml_node& node, Widget* pParent) const override;
 		HBRUSH GetBackgroundBrush();
 		Colour GetBackgroundColour() { return m_BackgroundColour; }
 		Colour GetTextColour() { return m_TextColour; }
+	protected:
+		virtual std::shared_ptr<Widget> FactoryImplementation(const pugi::xml_node& node, Widget* pParent) const override;
 	protected:
 		std::wstring m_Text;
 		int m_FontSize;
 		int m_Width;
 		int m_Height;
-		Alignment m_Alignment;
 		HFONT m_hFont;
 		std::wstring m_FontName;
 		Colour m_TextColour;

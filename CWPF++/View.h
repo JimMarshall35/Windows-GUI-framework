@@ -53,7 +53,8 @@ namespace CWPF {
 			virtual float GetHeight() override;
 			virtual const wchar_t* GetName() override;
 			virtual View* GetView() override;
-			virtual std::shared_ptr<Widget> Factory(const pugi::xml_node& node, Widget* pParent) const override;
+		protected:
+			virtual std::shared_ptr<Widget> FactoryImplementation(const pugi::xml_node& node, Widget* pParent) const override;
 		private:
 			View* m_pView = nullptr;
 			float m_Width;

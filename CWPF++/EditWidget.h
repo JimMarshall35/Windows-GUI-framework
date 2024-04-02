@@ -16,11 +16,12 @@ namespace CWPF
 		EditWidget() {}
 		EditWidget(Widget* pParent, const EditWidgetCreateArgs& args);
 		// Inherited via Widget
-		virtual std::shared_ptr<Widget> Factory(const pugi::xml_node& node, Widget* pParent) const override;
 		virtual void Create(HWND hwnd, const Vec2& pos) override;
 		virtual float GetWidth() override;
 		virtual float GetHeight() override;
 		virtual const wchar_t* GetName() override;
+	protected:
+		virtual std::shared_ptr<Widget> FactoryImplementation(const pugi::xml_node& node, Widget* pParent) const override;
 	protected:
 		int m_Width;
 		int m_Height;

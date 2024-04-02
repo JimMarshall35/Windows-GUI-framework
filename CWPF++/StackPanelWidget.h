@@ -27,7 +27,8 @@ namespace CWPF
 		virtual const wchar_t* GetName() override;
 		virtual bool IsCreated() override { return m_hWnd != NULL; }
 		virtual void LayoutChildren() override;
-		virtual std::shared_ptr<Widget> Factory(const pugi::xml_node& node, Widget* pParent) const override;
+	protected:
+		virtual std::shared_ptr<Widget> FactoryImplementation(const pugi::xml_node& node, Widget* pParent) const override;
 	private:
 		StackPanelOrientation m_Orientation;
 	};

@@ -9,7 +9,7 @@ namespace CWPF {
 
     }
 
-    std::shared_ptr<Widget> StackPanelWidget::Factory(const pugi::xml_node& node, Widget* pParent) const
+    std::shared_ptr<Widget> StackPanelWidget::FactoryImplementation(const pugi::xml_node& node, Widget* pParent) const
     {
         StackPanelWidgetInitArgs args;
         const wchar_t* str = node.attribute(L"orientation").as_string();

@@ -47,7 +47,7 @@ namespace CWPF {
         return name;
     }
 
-    std::shared_ptr<Widget> EditWidget::Factory(const pugi::xml_node& node, Widget* pParent) const
+    std::shared_ptr<Widget> EditWidget::FactoryImplementation(const pugi::xml_node& node, Widget* pParent) const
     {
         EditWidgetCreateArgs args;
         args.Height = node.attribute(L"height").as_int();

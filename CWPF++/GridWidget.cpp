@@ -37,7 +37,7 @@ namespace CWPF
         return name;
     }
 
-    std::shared_ptr<Widget> GridWidget::Factory(const pugi::xml_node& wnd, Widget* pParent) const
+    std::shared_ptr<Widget> GridWidget::FactoryImplementation(const pugi::xml_node& wnd, Widget* pParent) const
     {
         std::shared_ptr<Widget> g = std::make_shared<GridWidget>(pParent);
         GridWidget* pGrid = static_cast<GridWidget*>(g.get());

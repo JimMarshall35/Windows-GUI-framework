@@ -256,7 +256,7 @@ namespace CWPF
         return name;
     }
 
-    std::shared_ptr<Widget> View::RootWidget::Factory(const pugi::xml_node& node, Widget* pParent) const
+    std::shared_ptr<Widget> View::RootWidget::FactoryImplementation(const pugi::xml_node& node, Widget* pParent) const
     {
         assert(false);
         return nullptr;
