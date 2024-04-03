@@ -101,19 +101,6 @@ namespace CWPF
                     s_WidgetIDMap[(HMENU)id] = w;
                 }
                 w->EnumerateBindings(m_Bindings);
-
-                int column = 0;
-                int row = 0;
-                if (pugi::xml_attribute attr = child.attribute(L"column"))
-                {
-                    column = attr.as_int();
-                }
-                if (pugi::xml_attribute attr = child.attribute(L"row"))
-                {
-                    row = attr.as_int();
-                }
-
-                w->SetColumnAndRow(column, row);
                 parent->PushChild(w);
                 AddChildren(w.get(), child, recursionLevel + 1);
             }

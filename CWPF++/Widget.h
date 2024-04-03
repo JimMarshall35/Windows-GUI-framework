@@ -25,7 +25,8 @@ namespace CWPF {
 	{
 		HorizontalAlignment HorizontalAlignment = HorizontalAlignment::Left;
 		VerticalAlignment VerticalAlignment = VerticalAlignment::Top;
-
+		int Row = 0;
+		int Column = 0;
 	};
 	
 	class Widget
@@ -56,18 +57,6 @@ namespace CWPF {
 		virtual bool IsCreated() { return m_hWnd != NULL; }
 		Vec2 GetPos() { return m_Pos; }
 		void SetPos(const Vec2& pos) { m_Pos = pos; }
-
-		inline void SetColumnAndRow(int col, int row)
-		{
-			m_Row = row;
-			m_Column = col;
-		}
-
-		inline void SetColumnAndRow(const IVec2& c)
-		{
-			m_Row = c.y;
-			m_Column = c.x;
-		}
 
 		inline IVec2 GetColAndRow()
 		{

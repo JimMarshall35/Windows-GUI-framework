@@ -21,6 +21,14 @@ namespace CWPF {
         {
             a.VerticalAlignment = ParseVAlignment(attr.as_string());
         }
+        if (pugi::xml_attribute attr = node.attribute(L"column"))
+        {
+            a.Column = attr.as_int();
+        }
+        if (pugi::xml_attribute attr = node.attribute(L"row"))
+        {
+            a.Row = attr.as_int();
+        }
         return a; 
     }
 
@@ -32,6 +40,8 @@ namespace CWPF {
         CommonWidgetInitArgs wArgs = ParseCommonInitArgs(node);
         w->m_VerticalAlignment = wArgs.VerticalAlignment;
         w->m_HorizontalAlignment = wArgs.HorizontalAlignment;
+        w->m_Row = wArgs.Row;
+        w->m_Column = wArgs.Column;
         return w;
     }
 
