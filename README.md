@@ -1,7 +1,24 @@
 - C++ framework for developing guis on windows
 - Based on WPF
+- GUIs defined declaratively by xml
 - MVVM pattern + data binding
-- No usage of .rc file defined dialogs
-- No usage of .rc file string tables
-- Pure win32 - no MFC dependency
+- No usage of .rc file defined dialogs, resources will be used only for string tables
+- Pure win32 - no MFC dependency and there never will be
 - wide character strings ONLY
+
+future work
+- refine and finish data binding, hierarchical data contexts, binding to arrays / lists, ect ect
+- WPF style DSL for bindings "{Binding Property, Convertor MyConverter}", ect
+- WPF style static resources
+- dockable panels
+- toolbar / ribbon bar
+- menus
+- MFC / Win32 accelerator table equivalent / abstraction
+- DX context canvas widget
+- OpenGL context canvas widget
+- GDI / GDI+ context canvas widget
+- build in satellite DLL support for translations
+- show view as a modal window
+- WPF style value converters
+- WPF style data validation
+- Command arguments
