@@ -1,0 +1,7 @@
+- C++ framework for developing guis on windows
+- Based on WPF
+- MVVM pattern + data binding
+- No usage of .rc file defined dialogs
+- No usage of .rc file string tables
+- Pure win32 - no MFC dependency
+- wide character strings ONLY
