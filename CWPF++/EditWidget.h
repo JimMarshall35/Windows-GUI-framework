@@ -19,6 +19,9 @@ namespace CWPF
 		virtual void Create(HWND hwnd, const Vec2& pos) override;
 		virtual float GetWidth() override;
 		virtual float GetHeight() override;
+		virtual void EnumerateBindings(std::map<std::wstring, std::vector<WidgetPropertyBinding>>& bindingsMap) const override;
+		virtual void OnBoundPropertyChanged(const TaggedBindingValue& val, const std::wstring& name) override;
+
 		virtual const wchar_t* GetName() override;
 	protected:
 		virtual std::shared_ptr<Widget> FactoryImplementation(const pugi::xml_node& node, Widget* pParent) const override;

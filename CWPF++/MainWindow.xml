@@ -21,7 +21,7 @@
 			<Button text="buttonText" width="50" height="25" command="CmdProperty"/>
 		</StackPanel>
 		<StackPanel orientation="vertical" column="1" row="2">
-			<Edit width="100" height="100" styles="hscroll,vscroll"/>
+			<Edit width="100" height="100" styles="hscroll,vscroll" text="hello world"/>
 		</StackPanel>
 		<Button text="buttonText" column="2" row="2" width="50" height="25"/>
   

@@ -41,6 +41,15 @@ namespace CWPF {
         return m_Height;
     }
 
+    void EditWidget::EnumerateBindings(std::map<std::wstring, std::vector<WidgetPropertyBinding>>& bindingsMap) const
+    {
+
+    }
+
+    void EditWidget::OnBoundPropertyChanged(const TaggedBindingValue& val, const std::wstring& name)
+    {
+    }
+
     const wchar_t* EditWidget::GetName()
     {
         static const wchar_t* name = L"Edit";

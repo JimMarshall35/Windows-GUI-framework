@@ -29,7 +29,7 @@ namespace CWPF
 	{\
 		BackingFieldName = t;\
 		TaggedBindingValue v = TaggedBindingValue{ {nullptr}, BindingValueType::Command };\
-		v.Value.cmd = t;\
+		v.Value = t;\
 		BindablePropertyChanged(L#BindingName, v);\
 	}
 
@@ -38,7 +38,7 @@ namespace CWPF
 	{\
 		return BackingFieldName;\
 	}\
-	void ViewmodelClassname::Set_##BindingName(const wchar_t* t) \
+	void ViewmodelClassname::Set_##BindingName(const std::wstring& t) \
 	{\
 		BackingFieldName = t;\
 		BindablePropertyChanged(L#BindingName, TaggedBindingValue{ {t}, BindingValueType::Str });\
@@ -53,7 +53,7 @@ namespace CWPF
 	{\
 		BackingFieldName = i;\
 		TaggedBindingValue v = TaggedBindingValue{ {nullptr}, BindingValueType::Int };\
-		v.Value.i = i;\
+		v.Value = i;\
 		BindablePropertyChanged(L#BindingName, v);\
 	}
 
@@ -66,7 +66,7 @@ namespace CWPF
 	{\
 		BackingFieldName = b;\
 		TaggedBindingValue v = TaggedBindingValue{ {nullptr}, BindingValueType::Bool };\
-		v.Value.b = b;\
+		v.Value = b;\
 		BindablePropertyChanged(L#BindingName, v);\
 	}
 
@@ -79,28 +79,28 @@ namespace CWPF
 	{\
 		BackingFieldName = f;\
 		TaggedBindingValue v = TaggedBindingValue{ {nullptr}, BindingValueType::Flt };\
-		v.Value.f = f;\
+		v.Value = f;\
 		BindablePropertyChanged(L#BindingName, v);\
 	}
 
 #define REGISTER_BINDABLE_INT_SETTER(BindingName, BackingFieldName)\
 	BindablePropertySettersByName[std::wstring(L#BindingName)] = std::function<void(TaggedBindingValue)>([this](TaggedBindingValue v){\
-		BackingFieldName = v.Value.i;\
+		BackingFieldName = std::get<int>(v.Value);\
 	});
 
 #define REGISTER_BINDABLE_BOOL_SETTER(BindingName, BackingFieldName)\
 	BindablePropertySettersByName[std::wstring(L#BindingName)] = std::function<void(TaggedBindingValue)>([this](TaggedBindingValue v){\
-		BackingFieldName = v.Value.b;\
+		BackingFieldName = std::get<bool>(v.Value);\
 	});
 
 #define REGISTER_BINDABLE_WSTRING_SETTER(BindingName, BackingFieldName)\
 	BindablePropertySettersByName[std::wstring(L#BindingName)] = std::function<void(TaggedBindingValue)>([this](TaggedBindingValue v){\
-		BackingFieldName = v.Value.s;\
+		BackingFieldName = std::get<std::wstring>(v.Value);\
 	});
 
 #define REGISTER_BINDABLE_FLOAT_SETTER(BindingName, BackingFieldName)\
 	BindablePropertySettersByName[std::wstring(L#BindingName)] = std::function<void(TaggedBindingValue)>([this](TaggedBindingValue v){\
-		BackingFieldName = v.Value.f;\
+		BackingFieldName = std::get<float>(v.Value);\
 	});
 
 	class ViewModel
@@ -125,7 +125,7 @@ namespace CWPF
 		virtual void InitializeProperties() override;
 		DECLARE_BINDABLE_PROPERTY(IntProperty, int)
 		DECLARE_BINDABLE_PROPERTY(BoolProperty, bool)
-		DECLARE_BINDABLE_PROPERTY(StringProperty, const wchar_t*)
+		//DECLARE_BINDABLE_PROPERTY(StringProperty, const wchar_t*)
 		DECLARE_BINDABLE_PROPERTY(FloatProperty, float)
 		DECLARE_BINDABLE_PROPERTY(CmdProperty, ICommand*)
 

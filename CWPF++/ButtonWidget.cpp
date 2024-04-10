@@ -1,5 +1,6 @@
 #include "ButtonWidget.h"
 #include "Command.h"
+#include <variant>
 
 namespace CWPF {
 
@@ -77,7 +78,7 @@ namespace CWPF {
     void ButtonWidget::OnBoundPropertyChanged(const TaggedBindingValue& val, const std::wstring& name)
     {
         assert(val.VType == BindingValueType::Command);
-        m_pCmd = val.Value.cmd;
+        m_pCmd = std::get<ICommand*>(val.Value);
     }
     void ButtonWidget::OnCmdMesage(int msg)
     {

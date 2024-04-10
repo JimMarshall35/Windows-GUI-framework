@@ -4,6 +4,8 @@
 #include <functional>
 #include <cassert>
 #include <memory>
+#include <string>
+#include <variant>
 
 namespace CWPF
 {
@@ -62,13 +64,14 @@ namespace CWPF
 
 	struct TaggedBindingValue
 	{
-		union {
-			const wchar_t* s = nullptr;
+		/*union {
+			wchar_t* s = nullptr;
 			float f;
 			int i;
 			bool b;
 			ICommand* cmd;
-		}Value;
+		}Value;*/
+		std::variant<std::wstring, float, int, bool, ICommand*> Value;
 		BindingValueType VType = BindingValueType::Invalid;
 	};
 

@@ -2,14 +2,17 @@
 #define UNICODE
 #endif 
 
+#include <ctype.h>
 #include <windows.h>
 #include "View.h"
 #include "ViewModel.h"
 #include "CommonWidgets.h"
+#include "BindingExpressionParserLib.h"
+#include "WCFCommon.h"
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
-
+    //auto res = CWPF::LiteralValueParser("truegdfgdfg");
     CWPF::RegisterCommonWidgets();
 
     CWPF::View v(CWPF::ViewInitArgs{ L"MainWindow.xml" });
