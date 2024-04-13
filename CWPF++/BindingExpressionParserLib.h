@@ -154,7 +154,8 @@ namespace CWPF
 
 	constexpr auto AppendDigits(int a, char b) { return a * 10 + CharToInt(b); }
 
-	constexpr auto AppendDigitsNegating(int a, char b) { int val = (a * 10 + CharToInt(b));  return val > 0 ? -val : val; }
+	constexpr auto AppendDigitsNegating(int a, char b) {
+		int val = (a * 10 + CharToInt(b)); return val; }
 
 	constexpr auto AppendDigitsToString(std::string s, char c)
 	{
@@ -165,46 +166,63 @@ namespace CWPF
 
 	constexpr auto DigitParser = parser::one_of("0123456789");
 
+	constexpr auto ZeroIntParser = 
+		parser::one_of("0") |
+		parser::then([](char c) {
+			return parser::many(DigitParser, CharToInt(c), AppendDigits);
+		});
+
 	constexpr auto PositiveIntParser =
 		parser::one_of("123456789") |
 		parser::then([](char c) {
-		return parser::many(DigitParser, CharToInt(c), AppendDigits);
-	});
+			return parser::many(DigitParser, CharToInt(c), AppendDigits);
+		});
 
 	constexpr auto NegativeIntParser = parser::symbol('-') |
-		parser::ignore_previous(parser::one_of("123456789") |
-			parser::then([](char c) {
-		return parser::many(DigitParser, CharToInt(c), AppendDigitsNegating);
-	}));
+		parser::ignore_previous(parser::one_of("123456789")) |
+		parser::then([](char c) {
+			return parser::many(DigitParser, CharToInt(c), AppendDigitsNegating);
+		}) | 
+		parser::transform([](int v) { return -v; });
 
-	constexpr auto SignedIntParser = PositiveIntParser | parser::or_with(NegativeIntParser);
+	constexpr auto SignedIntParser = ZeroIntParser | 
+		parser::or_with(PositiveIntParser) | 
+		parser::or_with(NegativeIntParser);
+
 	constexpr auto IntUnionParser = SignedIntParser |
 		parser::transform([](int i) { return TaggedBindingValue{ {i}, BindingValueType::Int }; }) |
 		must_consume_all();;
 
 
 	/////////////////////////////////////////////////////////////////////////////////////// float
-
-
-	constexpr auto PositiveIntToStringParser =
-		parser::one_of("123456789")//
-		| parser::then([](char c) {
+	
+	constexpr auto ZeroParser = parser::one_of("0") |
+	parser::then([](char c) {
 		return parser::many(DigitParser, std::string("") + c, AppendDigitsToString);
 	});
 
-	constexpr auto NegativeIntToStringParser = parser::symbol('-') | parser::ignore_previous(parser::one_of("123456789")//
-		| parser::then([](char c) {
-		return parser::many(DigitParser, std::string("-") + c, AppendDigitsToString);
-	}));
+	constexpr auto PositiveIntToStringParser =
+		parser::one_of("123456789") |
+		parser::then([](char c) {
+			return parser::many(DigitParser, std::string("") + c, AppendDigitsToString);
+		});
 
-	constexpr auto SignedIntToStringParser = PositiveIntToStringParser | parser::or_with(NegativeIntToStringParser);
+	constexpr auto NegativeIntToStringParser = parser::symbol('-') | 
+		parser::ignore_previous(parser::one_of("123456789") |
+		parser::then([](char c) {
+			return parser::many(DigitParser, std::string("-") + c, AppendDigitsToString);
+		}));
+
+	constexpr auto SignedIntToStringParser = ZeroParser |
+		parser::or_with(PositiveIntToStringParser) |
+		parser::or_with(NegativeIntToStringParser);
 
 
-	auto Concat(std::string_view s, std::string_view s2)->std::string;
-	bool isdigitWrapper(char c);
-	float toFloat(std::string s);
-	bool IsValidStringCharacter(char c);
-	std::wstring sv2ws(const std::string_view& str);
+	auto CWPF_API Concat(std::string_view s, std::string_view s2)->std::string;
+	bool CWPF_API isdigitWrapper(char c);
+	float CWPF_API toFloat(std::string s);
+	bool CWPF_API IsValidStringCharacter(char c);
+	std::wstring CWPF_API sv2ws(const std::string_view& str);
 
 	constexpr auto MantissaParser = parser::many1_if(isdigitWrapper);
 
@@ -219,7 +237,7 @@ namespace CWPF
 
 	/////////////////////////////////////////////////////////////////////////////////////// string parser
 
-	constexpr auto StringParser = parser::many1_if(IsValidStringCharacter);
+	constexpr auto StringParser = parser::many_if(IsValidStringCharacter);
 	constexpr auto StringUnionParser = StringParser |
 		parser::transform([](std::string_view s) { return TaggedBindingValue{/* TODO: get rid of this by changing parsing lib to use wstring_view */{sv2ws(s)}, BindingValueType::Str}; }) |
 		must_consume_all();

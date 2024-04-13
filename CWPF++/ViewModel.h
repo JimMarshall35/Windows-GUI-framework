@@ -103,7 +103,7 @@ namespace CWPF
 		BackingFieldName = std::get<float>(v.Value);\
 	});
 
-	class ViewModel
+	class CWPF_API ViewModel
 	{
 	public:
 		DECLARE_BINDABLE_PROPERTY_CHANGED_EVENT
@@ -117,7 +117,7 @@ namespace CWPF
 		EventSubscriptionToken m_hViewSubscription = 0;
 	};
 
-	class TestViewModelMain : public ViewModel
+	class CWPF_API TestViewModelMain : public ViewModel
 	{
 	public:
 		TestViewModelMain();

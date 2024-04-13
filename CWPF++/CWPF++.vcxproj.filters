@@ -112,9 +112,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="MainWindow.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="CWPF++.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>

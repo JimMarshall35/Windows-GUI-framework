@@ -13,14 +13,14 @@
 
 namespace CWPF {
 
-	enum class StartUpType
+	enum class CWPF_API StartUpType
 	{
 		Maximized,
 		Minimized,
 		Normal
 	};
 
-	struct ViewInitArgs
+	struct CWPF_API ViewInitArgs
 	{
 		const wchar_t* xmlPath;
 		std::shared_ptr<ViewModel> dataContext;
@@ -29,7 +29,7 @@ namespace CWPF {
 		StartUpType SUT = StartUpType::Normal;
 	};
 
-	class View
+	class CWPF_API View
 	{
 	public:
 		View(const ViewInitArgs& args);

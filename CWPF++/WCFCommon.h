@@ -7,6 +7,12 @@
 #include <string>
 #include <variant>
 
+#ifdef CWPF_EXPORTS
+#define CWPF_API __declspec(dllexport)
+#else
+#define CWPF_API __declspec(dllimport)
+#endif
+
 namespace CWPF
 {
 	class Widget;
@@ -98,7 +104,7 @@ namespace CWPF
 
 	typedef int EventSubscriptionToken;
 	template<typename... ArgTs>
-	class Event
+	class CWPF_API Event
 	{
 	public:
 		EventSubscriptionToken operator +=(std::function<void(ArgTs...)> fn)

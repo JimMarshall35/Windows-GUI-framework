@@ -1,6 +1,7 @@
 #pragma once
+#include "WCFCommon.h"
 
 namespace CWPF
 {
-	void RegisterCommonWidgets();
+	void CWPF_API RegisterCommonWidgets();
 }
