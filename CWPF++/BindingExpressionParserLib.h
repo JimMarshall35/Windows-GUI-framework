@@ -88,7 +88,7 @@ namespace CWPF
 {
 	struct BindingInfo
 	{
-		BindingType type;
+		BindingType type = BindingType::Undefined;
 		std::wstring path;
 		std::wstring converter;
 		std::wstring src;
@@ -251,10 +251,121 @@ namespace CWPF
 
 	/////////////////////////////////////////////////////////////////////////////////////// binding simple name
 
-	//constexpr auto BindingSimpleNameParser = parser::one_of(
-	//	"abcdefghijklmnopqrstuvwxyz"
-	//	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	//	"_"
-	//) |
-	//	parser::combine_with();
+	constexpr auto BindingSimpleNameCharacters = parser::one_of(
+		"abcdefghijklmnopqrstuvwxyz"
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"_"
+		"0123456789"
+	);
+	constexpr auto BindingSimpleNameCharacters_FirstChar = parser::one_of(
+		"abcdefghijklmnopqrstuvwxyz"
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"_"
+	);
+
+	auto BindingSimpleNameParser = BindingSimpleNameCharacters_FirstChar |
+		parser::combine_with(
+			parser::many(BindingSimpleNameCharacters, std::string(""), AppendDigitsToString), 
+			[](char c, std::string s) {return std::string("") + c + s; });
+
+	/////////////////////////////////////////////////////////////////////////////////////// Static resource Expression
+
+	auto OneOrMoreSpacesParser = parser::one_of(" ") |
+		parser::then([](char c) {
+			return parser::many(parser::one_of(" "), std::string("") + c, AppendDigitsToString);
+		});
+
+	auto OptionalSpace = parser::many(parser::one_of(" "), std::string(""), AppendDigitsToString);
+
+
+	auto ExpressionEndParser = OptionalSpace |
+		parser::then([](std::string s) {
+			return parser::one_of("}");
+		});
+
+	auto StaticResourceExpressionParser = parser::one_of("{") |
+		parser::ignore_previous(OptionalSpace) |
+		parser::ignore_previous(parser::str("StaticResource")) |
+		parser::ignore_previous(OneOrMoreSpacesParser) |
+		parser::ignore_previous(BindingSimpleNameParser) |
+		parser::transform([](std::string s) { return StaticResourceInfo{ sv2ws(s) }; }) |
+		parser::ignore(ExpressionEndParser);
+
+
+	/////////////////////////////////////////////////////////////////////////////////////// Binding Expression
+
+
+	/*
+		<bindingExpression> = '{Binding' (<bindingSimpleName> | <bindingExpressionPair> | <bindingExpressionPair> ( ',' <bindingExpressionPair>)+ ) '}'
+		<bindingExpressionPair> = <pathPair> | <modePair> | <converterPair> | <sourcePair>
+		<pathPair> = 'path=' <bindingSimpleName>
+		<modePair> = 'mode=' ('OneWay' | 'TwoWay' | 'OneWayToSource' | 'OneTime' | 'Default)
+		<converterPair> = 'convertor='<StaticResource>
+		<sourcePair> = 'source='<StaticResource>
+
+	*/
+	
+	auto ModeStringParser = parser::str("OneWay") |
+		parser::or_with(parser::str("TwoWay")) |
+		parser::or_with(parser::str("OneWayToSource")) |
+		parser::or_with(parser::str("OneTime")) |
+		parser::or_with(parser::str("Default"));
+
+	BindingType BindingTypeFromString(const std::string& s);
+
+	auto PathPairParser = parser::str("path=") |
+		parser::ignore_previous(OptionalSpace) |
+		parser::ignore_previous(BindingSimpleNameParser);
+
+	auto ModePairParser = parser::str("mode=") |
+		parser::ignore_previous(OptionalSpace) |
+		parser::ignore_previous(ModeStringParser);
+
+	auto ConvertorPairParser = parser::str("converter=") |
+		parser::ignore_previous(OptionalSpace) |
+		parser::ignore_previous(BindingSimpleNameParser);
+
+	auto PathPairToBindingInfoParser = PathPairParser |
+		parser::transform([](std::string s) { 
+			BindingInfo b;
+			b.path = sv2ws(s);
+			return b;
+		});
+
+	auto ConvertorPairToBindingInfoParser = ConvertorPairParser |
+		parser::transform([](std::string s) {
+			BindingInfo b;
+			b.converter = sv2ws(s);
+			return b;
+		});
+
+	auto ModePairToBindingInfoParser = ConvertorPairParser |
+		parser::transform([](std::string s) {
+			BindingInfo b;
+			b.type = BindingTypeFromString(s);
+			return b;
+		});
+
+	auto BindingExpressionPairParser = ModePairToBindingInfoParser |
+		parser::or_with(ConvertorPairToBindingInfoParser) |
+		parser::or_with(PathPairToBindingInfoParser);
+
+	auto BindingExpressionPairListParser = parser::one_of(",") |
+		parser::ignore_previous(OptionalSpace) |
+		parser::ignore_previous(BindingExpressionPairParser);
+
+	BindingInfo MergeBindingInfos(BindingInfo a, BindingInfo b);
+
+	/*auto BindingBodyParser = 
+		parser::combine_with(
+			BindingExpressionPairParser,
+			parser::many(BindingExpressionPairListParser, BindingInfo{}, MergeBindingInfos ),
+			MergeBindingInfos
+		);*/
+	
+	//auto SourcePair = parser::str("source=") |
+	//	parser::ignore_previous(OptionalSpace) |
+	//	parser::ignore_previous(StaticResourceExpressionParser);
+
 }
+

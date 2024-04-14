@@ -53,9 +53,12 @@ namespace CWPF
 
 	enum class BindingType
 	{
+		Undefined,
 		TwoWay,
 		OneWay,
-		OneWayToSource
+		OneWayToSource,
+		OneTime,
+		Default
 	};
 
 	enum class BindingValueType

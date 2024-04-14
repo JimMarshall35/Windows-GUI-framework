@@ -31,4 +31,32 @@ namespace CWPF
 		MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
 		return wstrTo;
 	}
+	BindingType BindingTypeFromString(const std::string& s)
+	{
+		if (s == "OneWay")
+		{
+			return BindingType::OneWay;
+		}
+		else if (s == "TwoWay")
+		{
+			return BindingType::TwoWay;
+		}
+		else if (s == "OneWayToSource")
+		{
+			return BindingType::OneWayToSource;
+		}
+		else if (s == "OneTime")
+		{
+			return BindingType::OneTime;
+		}
+		else if (s == "Default")
+		{
+			return BindingType::Default;
+		}
+		return BindingType::Undefined;
+	}
+	BindingInfo MergeBindingInfos(BindingInfo a, BindingInfo b)
+	{
+		return BindingInfo();
+	}
 }
