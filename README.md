@@ -1,7 +1,7 @@
 - C++ framework for developing guis on windows
 - Based on WPF
 - GUIs defined declaratively by xml
-- MVVM pattern + data binding
+- The aim: MVVM pattern + data binding
 - No usage of .rc file defined dialogs, resources will be used only for string tables
 - Pure win32 - no MFC dependency and there never will be
 - wide character strings ONLY
